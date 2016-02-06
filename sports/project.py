@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 from datetime import datetime
 import os
 from werkzeug import secure_filename
@@ -122,6 +122,18 @@ def player(player_id):
     player = session.query(Player).filter_by(id=player_id).one()
     sport = session.query(Sport).filter_by(id=player.sport_id).one()
     return render_template('player.html', player=player, sport=sport)
+
+
+@app.route('/sports/json/')
+def sportsJson():
+    sports = session.query(Sport).all()
+    return jsonify(Sports=[sport.serialize for sport in sports])
+
+
+# @app.route('/players/json/<sport_id>/')
+# def playersJson(sport_id):
+#    players = session.query(Player).filter_by(sport_id=sport_id).all()
+#    return jsonify(Players=[player.serialize for player in players])
 
 
 if __name__ == '__main__':
