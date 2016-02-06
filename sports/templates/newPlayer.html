@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<link rel=stylesheet type=text/css href="/static/styles.css">
+	</head>
+	<body>
+		<header>
+			<div class='container'>New {{ sport.name }} player</div>
+		</header>
+		<div class='container'>	
+			<form action="#" method = 'post' enctype="multipart/form-data">
+				<div class='label'>Name</div>
+				<input type='text' name='name'/>
+				<br/><br/>
+				<div class='label'>Date of birth</div>
+				<input type='date' name='dob'/>
+				<br/><br/>
+				<div class='label'>Photo</div>
+				<input type='file' name='photo'/>
+				<br/><br/>
+				<div class='label'></div>
+				<input type='submit' value='Create'/>
+			</form>
+		</div>
+	</body>
+</html>

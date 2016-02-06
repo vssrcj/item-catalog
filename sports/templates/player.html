@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<link rel=stylesheet type=text/css href="/static/styles.css">
+	</head>
+	<body>
+		<header>
+			<div class='container'>{{ player.name }}</div>
+		</header>
+		<div class='container'>	
+			<div id='left'>
+				{% if player.photo %}
+					<div class='photo' style='background-image:url(/static/img/{{ player.photo }})'></div>
+				{% else %}
+					<div class='photo'></div>
+				{% endif %}</div>
+			</div>
+			<div id='right'>
+				<strong>Sport: </strong>  <br/>{{ sport.name }} <br/> <br/>
+				<strong>Date of birth: <br/> </strong> {{ player.dob }} <br/> <br/>
+				<a href = "{{url_for('updatePlayer', player_id = player.id)}}">Update</a> <br/> <br/>
+				<a href = "{{url_for('deletePlayer', player_id = player.id)}}">Delete</a>
+			</div>			
+		</div>
+	</body>
+</html>

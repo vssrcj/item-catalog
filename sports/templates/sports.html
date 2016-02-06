@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<link rel=stylesheet type=text/css href="/static/styles.css">
+	</head>
+	<body>
+		<header>
+			<div class='container'>SA Sports</div>
+		</header>
+		<div class='container'>	
+			<div id='left'>
+				{% for i in sports %} 
+					{% if i.id == sport_id|int %}					
+						<a  class='selected' href = "{{ url_for('sports', sport_id = i.id ) }}">{{ i.name }}</a>
+					{% else %}
+						<a href = "{{ url_for('sports', sport_id = i.id ) }}">{{ i.name }}</a>
+					{% endif %}
+					<br/>		
+					<br/>
+				{% endfor %}
+				<a href="{{ url_for('newSport') }}">New Sport</a>
+			</div>
+			<div id='right'>
+				{% for i in players %} 		
+					<a href = "{{ url_for('player', player_id = i.id ) }}">
+						<div class='player'/>
+							{% if i.photo %}
+								<div class='photo' style='background-image:url(/static/img/{{ i.photo }}'></div>
+							{% else %}
+								<div class='photo'></div>
+							{% endif %}
+							{{ i.name }}							
+						</div>
+					</a>
+				{% endfor %}		
+				<a href = "{{ url_for('newPlayer', sport_id = sport_id) }}"><div class='player new'><div class='photo'></div>New player</div></a>
+			</div>		
+		</div>
+	</body>
+</html>

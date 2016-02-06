@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<link rel=stylesheet type=text/css href="/static/styles.css">
+	</head>
+	<body>
+		<header>
+			<div class='container'>Update player</div>
+		</header>
+		<div class='container'>	
+			<form action="#" method = 'post' enctype="multipart/form-data">
+				<div class='label'>Name</div>
+				<input type='text' name='name' placeholder='{{ player.name }}'/>
+				<br/><br/>
+				<div class='label'>Date of birth</div>
+				<input type='date' name='dob' placeholder='{{ player.dob }}'/>
+				<br/><br/>
+				<div class='label'>Photo</div>
+				<input type='file' name='photo' value='{{ player.photo }}'/>
+					
+				<br/><br/>
+				<div class='label'></div>
+				<input type='submit' value='Update'/>
+			</form>
+		</div>
+	</body>
+</html>
