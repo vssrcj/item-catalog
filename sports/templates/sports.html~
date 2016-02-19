@@ -8,7 +8,7 @@
 	</head>
 	<body>
 		<header>
-			<div class='container'><div id='title'>SA Sports</div><div id="signInButton"><span class="g-signin"
+			<div class='container'><div>SA Sports</div><div id="signInButton"><span class="g-signin"
             data-scope="openid email"
             data-clientid="13140951618-15nik769cellkubaqnjk5facdib2dh4d.apps.googleusercontent.com"
             data-redirecturi="postmessage"

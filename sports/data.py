@@ -13,6 +13,9 @@ DBSession = sessionmaker(bind=engine)
 
 session = DBSession()
 
+session.query(Player).delete()
+session.commit()
+
 session.query(Sport).delete()
 session.commit()
 
@@ -30,18 +33,18 @@ session.add(tennis)
 
 session.commit()
 
-session.add(Player(name="Bryan Habana", dob=datetime.date(1982,1,4), sport=rugby))
-session.add(Player(name="Fourie du Preez", dob=datetime.date(1982,1,4), sport=rugby))
-session.add(Player(name="Dwyane Vermeulen", dob=datetime.date(1982,1,4), sport=rugby))
+session.add(Player(name="Bryan Habana", dob=datetime.date(1982,1,4), sport=rugby, photo='bryan.jpg'))
+session.add(Player(name="Handre Pollard", dob=datetime.date(1982,1,4), sport=rugby, photo='handre.jpg'))
+session.add(Player(name="Duane Vermeulen", dob=datetime.date(1982,1,4), sport=rugby, photo='duane.jpg'))
 
-session.add(Player(name="AB de Villiers", dob=datetime.date(1982,1,4), sport=cricket))
-session.add(Player(name="Hashim Amla", dob=datetime.date(1982,1,4), sport=cricket))
-session.add(Player(name="Dale Steyn", dob=datetime.date(1982,1,4), sport=cricket))
-session.add(Player(name="Kagiso Rabada", dob=datetime.date(1982,1,4), sport=cricket))
+session.add(Player(name="AB de Villiers", dob=datetime.date(1982,1,4), sport=cricket, photo='ab.jpg'))
+session.add(Player(name="Hashim Amla", dob=datetime.date(1982,1,4), sport=cricket, photo='hashim.jpg'))
+session.add(Player(name="Dale Steyn", dob=datetime.date(1982,1,4), sport=cricket, photo='dale.jpg'))
+session.add(Player(name="Quinton de Kock", dob=datetime.date(1982,1,4), sport=cricket, photo='quinton.jpg'))
 
-session.add(Player(name="Ernie Else", dob=datetime.date(1982,1,4), sport=golf))
-session.add(Player(name="Trevor Immelman", dob=datetime.date(1982,1,4), sport=golf))
+session.add(Player(name="Ernie Else", dob=datetime.date(1982,1,4), sport=golf, photo='ernie.jpg'))
+session.add(Player(name="Louis Oosthuizen", dob=datetime.date(1982,1,4), sport=golf, photo='louis.jpg'))
 
-session.add(Player(name="Wesley Moodey", dob=datetime.date(1982,1,4), sport=tennis))
+session.add(Player(name="Kevin Anderson", dob=datetime.date(1982,1,4), sport=tennis, photo='kevin.jpg'))
 
 session.commit()
