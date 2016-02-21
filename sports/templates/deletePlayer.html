@@ -1,16 +1,18 @@
-<html>
-	<head>
-		<link rel=stylesheet type=text/css href="/static/styles.css">
-	</head>
-	<body>
-		<header>
-			<div class='container'>Delete {{ player.name }}</div>
-		</header>
-		<div class='container'>	
-			Are you sure you want to delete? <br/><br/>
-			<form action="#" method = 'post'>
-				<input type='submit' value = 'Delete'>
-			</form>	
-		</div>
-	</body>
-</html>
+{% extends 'layout.html' %}
+
+{% block title %} Update Player {% endblock %}
+
+{% block menu %}
+
+	<li class='menu-text'>Update Player</li>
+
+{% endblock %}
+
+{% block body %}
+	<div class='medium-6 medium-offset-3'>
+		Are you sure you want to delete? <br/><br/>
+		<form action="#" method = 'post'>
+			<input type='submit' class='button alert' value = 'Delete'>
+		</form>	
+	</div>
+{% endblock %}

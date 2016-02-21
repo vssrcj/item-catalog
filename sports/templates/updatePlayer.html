@@ -1,26 +1,31 @@
-<html>
-	<head>
-		<link rel=stylesheet type=text/css href="/static/styles.css">
-	</head>
-	<body>
-		<header>
-			<div class='container'>Update player</div>
-		</header>
-		<div class='container'>	
-			<form action="#" method = 'post' enctype="multipart/form-data">
-				<div class='label'>Name</div>
+{% extends 'layout.html' %}
+
+{% block title %} Update Player {% endblock %}
+
+{% block menu %}
+
+	<li class='menu-text'>Update Player</li>
+
+{% endblock %}
+
+{% block body %}
+
+	<div class='row'>
+		<form action="#" method = 'post' enctype="multipart/form-data">
+			<div class='medium-6 medium-offset-3'>
+				<label for='name'>Name</label>
 				<input type='text' name='name' placeholder='{{ player.name }}'/>
-				<br/><br/>
-				<div class='label'>Date of birth</div>
+
+				<label for='photo' class='button secondary'>Upload new photo</label>	
+				<input type='file' class='show-for-sr' id='photo' name='photo'/>
+			
+				<label for='dob'>Date of birth</label>
 				<input type='date' name='dob' placeholder='{{ player.dob }}'/>
-				<br/><br/>
-				<div class='label'>Photo</div>
-				<input type='file' name='photo' value='{{ player.photo }}'/>
-					
-				<br/><br/>
-				<div class='label'></div>
-				<input type='submit' value='Update'/>
-			</form>
-		</div>
-	</body>
-</html>
+										
+				<input type='submit' class='button' value='Update'/>	
+				<a href = "{{ url_for('sports', sport_id = sport_id) }}" class='button warning'>Delete</a>
+			</div>
+		</form>
+	</div>
+
+{% endblock %}
