@@ -53,6 +53,7 @@ Navigate to **http://localhost:5000/sports** with your favourite web browser
 * You must log into the application by clicking on the right top-hand corner.  This will authenticate you using Google's services.
 * Only after you are authenticated may you create a new player by clicking on the tab
 * You can only edit or delete the players you have created
+* You can navigate to /json for a JavaScript endpoint, or /atom for an Atom one
 
 How the program is made
 -----------------------
