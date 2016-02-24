@@ -21,7 +21,7 @@
 	{% endif %}
 	</li>
 	{% endfor %}
-	{% if admin %}
+	{% if profile_picture %}
 	<li>
 		<a class='button' href="{{ url_for('newPlayer', sport_id = sport_id) }}">Create new player</a>
 	</li>
@@ -42,7 +42,7 @@
 						<div class='photo'></div>
 					{% endif %}						
 					<div class='player'>
-						<a href='{{ url_for('player', player_id=i.id) }}'>{{ i.name }}</a>
+						<a href='{{ url_for('getPlayer', player_id=i.id) }}'>{{ i.name }}</a>
 					</div>
 				</div>
 			</div>

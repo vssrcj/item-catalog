@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Sport, Player
+from database_setup import Base, Sport, Player, User
 
 # storing images
 import os
@@ -24,6 +24,7 @@ import json
 from flask import make_response
 import requests
 
+# atom feed
 from flask import request
 from werkzeug.contrib.atom import AtomFeed
 import time
@@ -33,33 +34,38 @@ app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
+# setting up and connecting to sqlite
 engine = create_engine('sqlite:///sports.db')
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
 @app.route('/newPlayer/<sport_id>/', methods=['GET', 'POST'])
 def newPlayer(sport_id):
-    if request.method == 'POST':
-        file = request.files['photo']
-        if file:
-            photo = file.filename
-            file.save(os.path.join('static/img/', photo))
-        else:
-            photo = None
+	if 'username' not in login_session:
+		return redirect(url_for('sports', sport_id=sport_id))
+	
+	if request.method == 'POST':
+		file = request.files['photo']
+		if file:
+			photo = file.filename
+			file.save(os.path.join('static/img/', photo))
+		else:
+			photo = None
 
-        player = Player(name=request.form['name'], 
-                        dob=datetime.strptime(request.form['dob'], 
-                        '%Y-%m-%d').date(), photo=photo,
-                        sport_id=sport_id)
-        session.add(player)
-        session.commit()
-        return redirect(url_for('sports', sport_id=sport_id))
-    else:
-        sport = session.query(Sport).filter_by(id=sport_id).one()
-        return render_template('newPlayer.html', sport=sport, sport_id=sport_id)
+		player = Player(name=request.form['name'], 
+						dob=datetime.strptime(request.form['dob'], 
+						'%Y-%m-%d').date(), photo=photo,
+						sport_id=sport_id, user_id=login_session['user_id'])
+		session.add(player)
+		session.commit()
+		return redirect(url_for('sports', sport_id=sport_id))
+	else:    	
+		profile_picture = login_session['picture']
+		sport = session.query(Sport).filter_by(id=sport_id).one()
+		return render_template(	'newPlayer.html', sport=sport, sport_id=sport_id, 
+								profile_picture=profile_picture)
 
 
 @app.route('/sports/<sport_id>/')
@@ -70,16 +76,15 @@ def sports(sport_id=1):
 	login_session['state'] = state
 
 	if 'username' in login_session:
-		profile_picture = login_session['picture']		
-		admin = True
+		profile_picture = login_session['picture']
 	else:
 		profile_picture = None
-		admin = False
 
 	sports = session.query(Sport).all()
+
 	players = session.query(Player).filter_by(sport_id=sport_id).all()
 	return render_template('sports.html', sport_id=sport_id, sports=sports, players=players,
-     					   STATE=state, profile_picture=profile_picture, admin=admin)
+     					   STATE=state, profile_picture=profile_picture)
 
 
 @app.route('/updatePlayer/<player_id>/', methods=['GET', 'POST'])
@@ -89,10 +94,13 @@ def updatePlayer(player_id):
 
 	player = session.query(Player).filter_by(id=player_id).one()
 
+	if player.user_id != login_session['user_id']:
+		return 	"""<script>function myFunction() {alert('You are not authorized to edit
+				this player. Please create your own player in order to edit.');}
+				</script><body onload='myFunction()''>"""
+
 	if request.method == 'POST':
-		print 'valid'
 		file = request.files['photo']
-		print 'valid2'
 		if file:            
 			player.photo = photo = file.filename
 			file.save(os.path.join('static/img/', photo))
@@ -116,6 +124,12 @@ def deletePlayer(player_id):
 		return redirect(url_for('sports'))
 
 	player = session.query(Player).filter_by(id=player_id).one()
+
+	if player.user_id != login_session['user_id']:
+		return 	"""<script>function myFunction() {alert('You are not authorized to delete
+				this player. Please create your own player in order to edit.');}
+				</script><body onload='myFunction()''>"""
+
 	if request.method == 'POST':
 		session.delete(player)
 		session.commit()
@@ -123,17 +137,22 @@ def deletePlayer(player_id):
 	else:
 		profile_picture = login_session['picture']
 		return render_template(
-			'deletePlayer.html', player=player, profile_picture=profile_picture, sport_id=player.sport_id)
+			'deletePlayer.html', player=player, sport_id=player.sport_id, profile_picture=profile_picture)
 
 
 @app.route('/player/<player_id>/')
-def player(player_id):
+def getPlayer(player_id):
 	if 'username' in login_session:
 		profile_picture = login_session['picture']
-		admin = True
 	else:
 		profile_picture = None
+
+	player = session.query(Player).filter_by(id=player_id).one()
+
+	if player.user_id != login_session['user_id']:
 		admin = False
+	else:
+		admin = True
 
 	player = session.query(Player).filter_by(id=player_id).one()
 	sport = session.query(Sport).filter_by(id=player.sport_id).one()
@@ -141,7 +160,7 @@ def player(player_id):
 
 
 @app.route('/json/')
-def json():
+def jsonAll():
 	sports = session.query(Sport).all()
 	results = {}
 	results["sports"] = []
@@ -153,6 +172,7 @@ def json():
 		results["sports"].append({"name": sport.name, "players": line})
 	
 	return jsonify(results)
+
 
 @app.route('/atom')
 def atom():
@@ -178,7 +198,6 @@ def gconnect():
 	# Obtain authorization code	
 	request.get_data()
 	code = request.data.decode('utf-8')
-	print 'fine1'
 
 	try:
 		# Upgrade the authorization code into a credentials object
@@ -189,7 +208,6 @@ def gconnect():
 		response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	print 'fine2'
     # Check that the access token is valid.
 	access_token = credentials.access_token
 	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
@@ -198,13 +216,11 @@ def gconnect():
 	response = h.request(url, 'GET')[1]
 	str_response = response.decode('utf-8')
 	result = json.loads(str_response)
-	print 'fine3'
     # If there was an error in the access token info, abort.
 	if result.get('error') is not None:
 		response = make_response(json.dumps(result.get('error')), 500)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	print 'fine4'
     # Verify that the access token is used for the intended user.
 	gplus_id = credentials.id_token['sub']
 	if result['user_id'] != gplus_id:
@@ -212,21 +228,18 @@ def gconnect():
 		json.dumps("Token's user ID doesn't match given user ID."), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	print 'fine5'
     # Verify that the access token is valid for this app.
 	if result['issued_to'] != CLIENT_ID:
 		response = make_response(
 		json.dumps("Token's client ID does not match app's."), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	print 'fine6'
 	stored_access_token = login_session.get('access_token')
 	stored_gplus_id = login_session.get('gplus_id')
 	if stored_access_token is not None and gplus_id == stored_gplus_id:
 		response = make_response(json.dumps('Current user is already connected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	print 'fine7'
     # Store the access token in the session for later use.
 	login_session['access_token'] = access_token
 	login_session['gplus_id'] = gplus_id
@@ -241,21 +254,14 @@ def gconnect():
 	login_session['username'] = data['name']
 	login_session['picture'] = data['picture']
 	login_session['email'] = data['email']
-	print 'fine8'
     # see if user exists, if it doesn't make a new one
-  	"""  user_id = getUserID(login_session['email'])
-    if not user_id:
-        user_id = createUser(login_session)
-    login_session['user_id'] = user_id
+	user_id = getUserID(login_session['email'])
+	if not user_id:
+		user_id = createUser(login_session)
+	login_session['user_id'] = user_id
 
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '"""
 	return "you are now logged in as %s" % login_session['username']
+
 
 @app.route('/gdisconnect/<sport_id>/')
 def gdisconnect(sport_id=1):
@@ -279,6 +285,22 @@ def gdisconnect(sport_id=1):
 		del login_session['picture']
 
 	return redirect(url_for('sports', sport_id=sport_id))
+
+
+def createUser(login_session):
+	new_user = User(name=login_session['username'], email=login_session['email'])
+	session.add(new_user)
+	session.commit()
+	user = session.query(User).filter_by(email=login_session['email']).one()
+	return user.id
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 
 if __name__ == '__main__':
