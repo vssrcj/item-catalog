@@ -141,18 +141,18 @@ def deletePlayer(player_id):
 
 
 @app.route('/player/<player_id>/')
-def getPlayer(player_id):
-	if 'username' in login_session:
-		profile_picture = login_session['picture']
-	else:
-		profile_picture = None
-
+def getPlayer(player_id):	
 	player = session.query(Player).filter_by(id=player_id).one()
 
-	if player.user_id != login_session['user_id']:
-		admin = False
+	if 'username' in login_session:
+		profile_picture = login_session['picture']
+		if player.user_id != login_session['user_id']:
+			admin = False
+		else:
+			admin = True
 	else:
-		admin = True
+		profile_picture = None
+		admin = False	
 
 	player = session.query(Player).filter_by(id=player_id).one()
 	sport = session.query(Sport).filter_by(id=player.sport_id).one()
