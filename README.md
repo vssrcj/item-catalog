@@ -17,7 +17,7 @@ git clone git://github.com/vssrcj/udacity-fullstack-project3.git
 Vagrant is needed for this application to work.
 
 First install Virtualbox (or another supported provider) for virtualisation.
-A guid is found [here](https://www.udacity.com/wiki/ud197/install-vagrant) to install both virtualbox and vagrant.
+A guide is found [here](https://www.udacity.com/wiki/ud197/install-vagrant) to install both virtualbox and vagrant.
 
 ### Launch Vagrant
 

@@ -183,7 +183,7 @@ def atom():
         feed.add(player.name, "Sport: " + player.sport.name,
                  content_type='html',
                  author='CJ',
-                 url=url_for('player', player_id=player.id),
+                 url=url_for('getPlayer', player_id=player.id),
                  updated=datetime.now())
     return feed.get_response()
 
