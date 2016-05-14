@@ -1,4 +1,4 @@
-# Project 3
+# Item Catalog
 
 *By [CJ](https://github.com/vssrcj)*
 
